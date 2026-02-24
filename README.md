@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# Prime Radiant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A desktop app that visualizes project architecture spatially and lets developers direct AI coding agents from that visual canvas.
 
-Currently, two official plugins are available:
+## What It Does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Open any project** and Prime Radiant scans the codebase, parses imports, classifies environment variables, and renders an interactive force-directed graph:
 
-## React Compiler
+- **Module nodes** — directories with file counts, connected by weighted import edges
+- **Service nodes** — external dependencies (databases, caches, auth providers, APIs) detected from `.env` files, color-coded by category
+- **The Radiant** — an animated starburst that represents the AI agent. It moves to the file it's reading, pulses when it's thinking, glows when it's writing.
+- **Drill-down** — double-click a module to see its files, color-coded by type. Escape to zoom back out.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Chat with the agent from the terminal panel. Prompts go to the Claude CLI running as a Rust subprocess. The Radiant moves through the architecture in real-time as the agent reads, writes, and thinks. When the agent modifies files, the scanner re-runs and the canvas updates.
 
-## Expanding the ESLint configuration
+## Philosophy
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Visual-agent-first development. Instead of reading terminal output to understand what an agent is doing, you watch it move through your architecture. Built with multi-agent coordination as a first-class concern — multiple agents working across a codebase should be visible, directed, and comprehensible from a single spatial canvas.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Architecture
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| Layer | Technology |
+|-------|-----------|
+| Desktop shell | Tauri v2 |
+| Frontend | React 19, TypeScript, Vite 7 |
+| Canvas | PixiJS v8, pixi-viewport |
+| Layout | d3-force |
+| State | Zustand |
+| Backend | Rust |
+| Agent | Claude CLI subprocess |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Getting Started
+
+### Prerequisites
+
+- **Node.js 22+**
+- **Rust** (latest stable)
+- **Claude CLI** installed and authenticated (for agent features)
+
+### Development
+
+```bash
+npm install
+npm run tauri:dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Build
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run tauri:build
 ```
